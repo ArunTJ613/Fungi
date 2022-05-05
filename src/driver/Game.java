@@ -5,7 +5,6 @@ import java.io.Console;
 import board.*;
 import cards.Card;
 import cards.CardType;
-import javafx.application.Application;
 
 public class Game{
 	private static Player p1, p2;
@@ -17,7 +16,7 @@ public class Game{
 		Board.initialisePiles();
 		Board.setUpCards();
 		Board.getForestCardsPile().shufflePile();
-
+		
 		//Populate forest
 		for (int i=0; i<8;i++) {
 			Board.getForest().add(Board.getForestCardsPile().drawCard());
@@ -120,14 +119,8 @@ public class Game{
 		}
 	}
 
-
 	public static void main (String [] args) {
-		if (args[0].equals("terminal")) {
-			play();
-		}
-		else if (args[0].equals("graphic")) {
-			//Application.launch(GraphicalGame.class, args);
-		}
+		play();
 	}
 
 	private static void displayBoard() {
