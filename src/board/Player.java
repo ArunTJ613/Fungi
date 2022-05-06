@@ -15,6 +15,8 @@ public class Player{
      score = 0;
      handlimit = 8;
      sticks = 0;
+     Card c = new Pan();
+     d.add(c);
   }
   public int getScore(){
     return score;
@@ -26,6 +28,11 @@ public class Player{
     return sticks;
   }
   public void addSticks(int i){
+    Card c = new Stick();
+    for (int j = 0;j < i; j++){
+      c = new Stick();
+      d.add(c);
+    }
     sticks = sticks + i;
   }
   public void removeSticks(int i){
@@ -38,7 +45,13 @@ public class Player{
     return d;
   }
   public void addCardtoHand(Card card){
-    h.add(card);
+    if (card.getName().equals("basket")){
+      d.add(card);
+      handlimit = handlimit + 2;
+    } else {
+      h.add(card);
+    }
+
   }
   public void addCardtoDisplay(Card card){
     d.add(card);
@@ -51,9 +64,11 @@ public class Player{
       c = h.getElementAt(i);
       if (c.getName().equals("pan")){
         c = h.removeElement(i);
+        i = i-1;
         check_pan = true;
         break;
       }
+      length = h.size();
     }
     if (check_pan){
       d.add(c);
@@ -64,7 +79,7 @@ public class Player{
   }
 
   public boolean sellMushrooms(String s,int num){
-    s = s.replaceAll("//s","");
+    s = s.replaceAll("\\s+","");
     s = s.toLowerCase();
     if (s.equals("honeyfungus")||s.equals("treeear")||s.equals("porcini")||s.equals("shiitake")||s.equals("morel")||s.equals("lawyerswig")||s.equals("henofwoods")||s.equals("chanterelle")||s.equals("birchbolete")){
       int r = 3;
@@ -81,7 +96,11 @@ public class Player{
     for (int i = 0; i<length; i++){
         c = h.getElementAt(i);
         if (c.getName().equals(s)){
-          count = count + 1;
+          if (c.getType()==CardType.DAYMUSHROOM){
+            count = count + 1;
+          } else {
+            count = count + 2;
+          }
           if(count==num){
             not_okay = false;
             break;
@@ -94,26 +113,35 @@ public class Player{
       }
 
       int num_mushrooms = 0;
+      int stacks = 0;
       for (int i = 0; i<length; i++){
           c = h.getElementAt(i);
           if (c.getName().equals(s)){
-            count = count - 1;
+            stacks = ((Mushroom) c).getSticksPerMushroom();
             c = h.removeElement(i);
-            if (c.getType()==CardType.DAYMUSHROOM){
-              num_mushrooms = num_mushrooms + 1;
-            } else {
+            i = i-1;
+            if (c.getType()==CardType.NIGHTMUSHROOM){
               num_mushrooms = num_mushrooms + 2;
+              count = count - 2;
+            } else {
+              num_mushrooms = num_mushrooms + 1;
+              count = count - 1;
             }
 
-            if(count==0){
+            if(num_mushrooms==num){
               break;
             }
+            length = h.size();
           }
       }
 
-      int stacks = ((Mushroom) c).getSticksPerMushroom();
-      stacks = num_mushrooms*stacks;
-      addSticks(stacks);
+      stacks = num*stacks;
+      sticks = sticks + stacks;
+
+      for (int j=0; j<stacks; j++){
+        c = new Stick();
+        d.add(c);
+      }
       return true;
 
 
@@ -135,9 +163,9 @@ public boolean takeCardFromTheForest(int pos){
     }
 
   }
-
+  int num_of_sticks = 0;
   if (pos>2){
-    int num_of_sticks = pos-2;
+    num_of_sticks = pos-2;
     if (num_of_sticks>sticks){
       return false;
     } else{
@@ -152,6 +180,22 @@ public boolean takeCardFromTheForest(int pos){
   } else {
     h.add(c);
   }
+
+  int length = d.size();
+  if (num_of_sticks>0){
+    for (int j=0; j<length; j++){
+      c = d.getElementAt(j);
+      if (c.getName().equals("stick")){
+        c = d.removeElement(j);
+        num_of_sticks = num_of_sticks - 1;
+        length = d.size();
+        j = j-1;
+      }
+      if (num_of_sticks==0){
+        break;
+      }
+    }
+  }
   return true;
 
 }
@@ -160,9 +204,20 @@ public boolean takeCardFromTheForest(int pos){
 public boolean takeFromDecay(){
   int currentlim = h.size();
   int len = Board.getDecayPile().size();
-  if (currentlim + len > handlimit){
+  int could_add = 0;
+  for(Card card: Board.getDecayPile()){
+    if (card.getName().equals("basket")){
+      could_add = could_add+2;
+      len = len-1;
+    }
+  }
+
+  if (currentlim + len > handlimit + could_add){
     return false;
   }
+
+
+
 
   for (Card c: Board.getDecayPile()){
     if (c.getName().equals("basket")){
@@ -172,6 +227,9 @@ public boolean takeFromDecay(){
         h.add(c);
     }
   }
+
+
+
   return true;
 
 }

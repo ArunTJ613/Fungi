@@ -8,8 +8,8 @@ public class Hand implements Displayable{
     handList = new ArrayList<Card>();
   }
 
-  public void add(Card card){
-    handList.add(card);
+  public void add(Card c){
+    handList.add(c);
   }
 
   public int size(){
