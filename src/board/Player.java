@@ -252,53 +252,68 @@ public boolean cookMushrooms(ArrayList<Card> arr){
     c = arr.get(i);
     if (c.getName().equals("pan")){
       no_pan_array = false;
-    } else if (c.getName().equals("butter")){
+    } else if (c.getType()==CardType.BUTTER){
       butter = butter+1;
     } else if (c.getName().equals("stick")||c.getName().equals("basket")){
       return false;
+    } else if (c.getName().equals("cider")){
+      cider = cider+1;
     } else if (first){
-      mushroom_name = c.getName();
-      first = false;
-      mushroom_flavor = ((EdibleItem) c).getFlavourPoints();
-      if (c.getType()==CardType.DAYMUSHROOM){
-        mushroom = mushroom + 1;
-      } else {
-        mushroom = mushroom + 2;
-      }
+        mushroom_name = c.getName();
+        first = false;
+        mushroom_flavor = ((EdibleItem) c).getFlavourPoints();
+        if (c.getType()==CardType.DAYMUSHROOM){
+          mushroom = mushroom + 1;
+        } else {
+          mushroom = mushroom + 2;
+        }
     } else if (!first){
-      if (!(c.getName().equals(mushroom_name))){
-        return false;
-      }
-      if (c.getType()==CardType.DAYMUSHROOM){
-        mushroom = mushroom + 1;
-      } else {
-        mushroom = mushroom + 2;
-      }
+        if (!(c.getName().equals(mushroom_name))){
+          return false;
+        }
+        if (c.getType()==CardType.DAYMUSHROOM){
+          mushroom = mushroom + 1;
+        } else {
+          mushroom = mushroom + 2;
+        }
 
-      } else if (c.getName().equals("cider")){
-        cider = cider+1;
-      } else {
-        int p =3;
-      }
 
+    } else {
+      int p =3;
     }
 
+    }
+  int cid = 0;
+  Card car;
+  for(int k=0; k<length; k++){
+    car = arr.get(k);
+    if (car.getType()==CardType.CIDER){
+      cid = cid+1;
+    }
+  }
 
+  int mushroom_copy = mushroom;
 
   if (mushroom < 3){
     return false;
   }
 
-  if(mushroom < butter*4){
+  if(mushroom_copy < butter*4){
     return false;
+  } else {
+    mushroom_copy = mushroom_copy - butter*4;
   }
 
-  if (mushroom < cider*5){
-    return false;
+  if (cid==0){
+    ;
+  } else {
+    if (mushroom_copy < cid*5){
+      return false;
+    }
   }
 
   if (no_pan_array){
-    int len_display = d.size();;
+    int len_display = d.size();
     int pan_index = 0;
     for (int i=0; i<len_display; i++){
       if (d.getElementAt(i).getName().equals("pan")){
@@ -309,11 +324,11 @@ public boolean cookMushrooms(ArrayList<Card> arr){
     }
   }
 
-if (no_pan_array||no_pan_display){
+if (no_pan_array&&no_pan_display){
   return false;
 }
 
-flavor = (mushroom*mushroom_flavor) + (butter*3) + (cider*5);
+flavor = (mushroom*mushroom_flavor) + (butter*3) + (cid*5);
 score = score +flavor;
 
 
